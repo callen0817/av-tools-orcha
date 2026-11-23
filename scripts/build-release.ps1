@@ -30,13 +30,17 @@ Write-Host "[1/5] Running unit and integration tests..."
 Invoke-CheckedDotNet @("test", (Join-Path $RepoRoot "tests\AV.Orch.UnitTests\AV.Orch.UnitTests.csproj"), "-c", $Configuration, "--nologo")
 Invoke-CheckedDotNet @("test", (Join-Path $RepoRoot "tests\AV.Orch.IntegrationTests\AV.Orch.IntegrationTests.csproj"), "-c", $Configuration, "--nologo")
 
-Write-Host "[2/5] Publishing AV.Orch.Desktop ($Runtime, self-contained=$SelfContained)..."
+Write-Host "[2/5] Publishing AV.Orch.Desktop ($Runtime, self-contained=$SelfContained, single-file)..."
 Invoke-CheckedDotNet @(
     "publish",
     (Join-Path $RepoRoot "src\AV.Orch.Desktop\AV.Orch.Desktop.csproj"),
     "-c", $Configuration,
     "-r", $Runtime,
     "--self-contained", $SelfContained,
+    "-p:PublishSingleFile=true",
+    "-p:IncludeNativeLibrariesForSelfExtract=true",
+    "-p:DebugType=None",
+    "-p:DebugSymbols=false",
     "-o", $PublishDir,
     "--nologo"
 )

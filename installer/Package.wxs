@@ -22,13 +22,16 @@
     </StandardDirectory>
 
     <Feature Id="MainFeature" Title="AV Orch Desktop Connector" Level="1">
-      <ComponentGroupRef Id="AppFiles" />
+      <ComponentRef Id="AvOrchExecutable" />
       <ComponentRef Id="ApplicationShortcut" />
     </Feature>
 
-    <ComponentGroup Id="AppFiles" Directory="INSTALLFOLDER">
-      <Files Include="$(var.PublishDir)\**" />
-    </ComponentGroup>
+    <Component Id="AvOrchExecutable" Directory="INSTALLFOLDER" Guid="9F2C6B14-8A3E-4C1B-9E71-54D02B8A6C31">
+      <File Id="AvOrchExeFile" Source="$(var.PublishDir)\AVOrch.exe" />
+      <RemoveFolder Id="RemoveInstallFolder" Directory="INSTALLFOLDER" On="uninstall" />
+      <RemoveFolder Id="RemoveCompanyFolder" Directory="CompanyFolder" On="uninstall" />
+      <RegistryValue Root="HKCU" Key="Software\Artificial Vision\AV Orch" Name="InstallPath" Type="string" Value="[INSTALLFOLDER]" KeyPath="yes" />
+    </Component>
 
     <Component Id="ApplicationShortcut" Directory="ApplicationProgramsFolder" Guid="3E9A5F12-6C4D-4A9E-B184-21F9E3C77A10">
       <Shortcut Id="ApplicationStartMenuShortcut"
@@ -37,7 +40,7 @@
                 Target="[INSTALLFOLDER]AVOrch.exe"
                 WorkingDirectory="INSTALLFOLDER" />
       <RemoveFolder Id="CleanUpShortCut" Directory="ApplicationProgramsFolder" On="uninstall" />
-      <RegistryValue Root="HKCU" Key="Software\Artificial Vision\AV Orch" Name="Installed" Type="integer" Value="1" KeyPath="yes" />
+      <RegistryValue Root="HKCU" Key="Software\Artificial Vision\AV Orch" Name="ShortcutInstalled" Type="integer" Value="1" KeyPath="yes" />
     </Component>
 
     <!-- Install AV Orch into the shared AV Tools Revit ribbon by default (preserves NX Xplode & other AV Tools) -->
