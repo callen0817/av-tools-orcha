@@ -45,7 +45,7 @@ highlight: new
 
     private const string ScriptPyContent = """
 # -*- coding: utf-8 -*-
-\"\"\"Launch AV Orch from the shared AV Tools Revit ribbon tab.\"\"\"
+# Launch AV Orch from the shared AV Tools Revit ribbon tab.
 __title__ = "AV Orch"
 __author__ = "Artificial Vision, Inc."
 

@@ -35,7 +35,9 @@ public sealed class AvToolsRibbonInstallerTests
         Assert.Empty(after.DetectedOtherAvTools);
         Assert.True(fs.FileExists(Path.Combine(installer.ExtensionRootDirectory, "extension.json")));
         Assert.True(fs.FileExists(Path.Combine(installer.ButtonDirectory, "bundle.yaml")));
-        Assert.True(fs.FileExists(Path.Combine(installer.ButtonDirectory, "script.py")));
+        var scriptPath = Path.Combine(installer.ButtonDirectory, "script.py");
+        Assert.True(fs.FileExists(scriptPath));
+        Assert.DoesNotContain("\\\"", fs.ReadAllText(scriptPath));
 
         // Removing when alone cleans up empty AV Tools folders
         var removeRes = await installer.RemoveAvOrchFromRibbonAsync();
