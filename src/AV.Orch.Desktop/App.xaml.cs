@@ -13,6 +13,14 @@ public partial class App : Application
         var settings = composition.SettingsService.Load();
         composition.Logger.PurgeOldLogs(settings.LogRetentionDays);
 
+        // Support silent installer switch: AVOrch.exe --install-ribbon
+        if (e.Args.Any(a => string.Equals(a, "--install-ribbon", StringComparison.OrdinalIgnoreCase)))
+        {
+            await composition.RibbonInstaller.InstallOrUpdateRibbonAsync(settings.CustomPyRevitPath);
+            Shutdown(0);
+            return;
+        }
+
         // Support silent uninstaller cleanup switch: AVOrch.exe --uninstall-cleanup
         if (e.Args.Any(a => string.Equals(a, "--uninstall-cleanup", StringComparison.OrdinalIgnoreCase)))
         {

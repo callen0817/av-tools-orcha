@@ -17,5 +17,6 @@
 | Component | Supported Versions | Notes |
 |---|---|---|
 | **Operating System** | Windows 10 (1903+) / Windows 11 (x64) | Must run as a standard (non-elevated) user for pyRevit agent host. |
-| **Autodesk Revit** | 2021 – 2027 (2022–2027 CI-tested by pyRevit) | Revit must not be run as Administrator. |
+| **Autodesk Revit** | **2023 forward** (2023, 2024, 2025, 2026, 2027+) | Revit must not be run as Administrator. |
+| **AV Tools Revit Ribbon** | Shared `AV Tools` tab (`%APPDATA%\pyRevit\Extensions\AV Tools.extension\AV Tools.tab\AI.panel\AV Orch.pushbutton`) | Automatically shares the single `AV Tools` tab with NX Xplode (`av-tools-xnf`) and other AV Tools without creating a duplicate ribbon. |
 | **pyRevit** | 7.0.0+ (7.1.0+ strongly recommended) | Agent runtime is off by default; AV Orch enables via `pyrevit configs agent enable`. |

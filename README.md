@@ -12,7 +12,7 @@ AV Orch connects your existing AI coding assistants — **OpenAI Codex CLI**, **
   - **Google Gemini CLI** (`GeminiAdapter`) — dedicated local stdio MCP adapter for `~/.gemini/settings.json` with `trust: false` and surgical backup/merge.
   - **Anthropic Claude Code** (`ClaudeCodeAdapter`) — native `pyrevit mcp install claude` + surgical `~/.claude.json` backup/merge.
 - **Multi-Provider Coexistence**: Enable one, two, or all three providers simultaneously without overwriting unrelated MCP servers or settings.
-- **pyRevit 7.x+ MCP Integration**: Detects Revit (2021–2027) and pyRevit, manages `pyrevit configs agent`, enforces **Read-Only** by default, and supports **Ask Before Modifications** (native Revit Keep/Discard approval).
+- **pyRevit 7.x+ MCP Integration & Shared AV Tools Ribbon**: Supports **Autodesk Revit 2023 forward** (`2023+`), installs **AV Orch** onto the shared **`AV Tools`** Revit ribbon (`AI` panel) alongside NX Xplode (`av-tools-xnf`) and other AV Tools without creating a duplicate ribbon, enforces **Read-Only** by default, and supports **Ask Before Modifications** (native Revit Keep/Discard approval).
 - **Reversible & Safe**: Timestamped SHA-256 configuration backups before every edit, automatic rollback on validation failure, secret redaction in local logs, zero telemetry by default, and clean uninstall (`--uninstall-cleanup`).
 
 ## Quick Start (Build & Test)

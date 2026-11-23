@@ -73,6 +73,27 @@ public sealed class InMemoryFileSystem : IFileSystem
         EnsureParentDirectories(key);
     }
 
+    public void DeleteDirectory(string path, bool recursive = false)
+    {
+        var key = Normalize(path).TrimEnd('/');
+        var prefix = key + "/";
+        if (recursive)
+        {
+            foreach (var file in _files.Keys.Where(k => k.StartsWith(prefix, StringComparison.OrdinalIgnoreCase)).ToList())
+            {
+                _files.Remove(file);
+                _timestamps.Remove(file);
+            }
+
+            foreach (var dir in _directories.Where(d => d.StartsWith(prefix, StringComparison.OrdinalIgnoreCase)).ToList())
+            {
+                _directories.Remove(dir);
+            }
+        }
+
+        _directories.Remove(key);
+    }
+
     public IEnumerable<string> EnumerateFiles(string directory, string searchPattern = "*")
     {
         var dir = Normalize(directory).TrimEnd('/');

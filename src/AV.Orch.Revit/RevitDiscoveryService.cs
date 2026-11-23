@@ -6,8 +6,7 @@ namespace AV.Orch.Revit;
 
 public sealed class RevitDiscoveryService : IRevitDiscoveryService
 {
-    public const int MinSupportedRevitYear = 2021;
-    public const int MaxSupportedRevitYear = 2027;
+    public const int MinSupportedRevitYear = 2023;
 
     private static readonly Regex RevitFolderRegex = new(@"^Revit\s+(?<year>20\d{2})$", RegexOptions.IgnoreCase | RegexOptions.Compiled);
 
@@ -43,7 +42,7 @@ public sealed class RevitDiscoveryService : IRevitDiscoveryService
                     continue;
                 }
 
-                var isSupported = year >= MinSupportedRevitYear && year <= MaxSupportedRevitYear;
+                var isSupported = year >= MinSupportedRevitYear;
                 results.Add(new RevitInstallation(
                     year,
                     $"Autodesk Revit {year}",

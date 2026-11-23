@@ -1,0 +1,6 @@
+title: "AV Orch"
+tooltip: |
+  Launch AV Orch — Artificial Vision's local AI-to-Revit MCP connector for
+  OpenAI Codex, Google Gemini CLI, and Anthropic Claude Code (Revit 2023+).
+author: "Artificial Vision, Inc."
+highlight: new

@@ -14,6 +14,7 @@ public sealed class MainViewModel : ObservableObject
     private readonly IAuditLogService _auditLog;
     private readonly IAppLogger _logger;
     private readonly UninstallCleanupService _uninstallCleanup;
+    private readonly AvToolsRibbonInstaller _ribbonInstaller;
 
     private string _activeSection = "Home";
     private bool _isBusy;
@@ -21,6 +22,7 @@ public sealed class MainViewModel : ObservableObject
     private string _revitConnectionSummary = "Not checked";
     private string _activeDocumentSummary = "None";
     private string _pyRevitStateSummary = "Not checked";
+    private string _avToolsRibbonSummary = "Not checked";
     private string _connectionHealthSummary = "Pending check";
     private string _lastDiagnosticSummary = "No diagnostic run yet.";
     private bool _isReadOnlyPolicy = true;
@@ -34,19 +36,22 @@ public sealed class MainViewModel : ObservableObject
         ISettingsService settingsService,
         IAuditLogService auditLog,
         IAppLogger logger,
-        UninstallCleanupService uninstallCleanup)
+        UninstallCleanupService uninstallCleanup,
+        AvToolsRibbonInstaller ribbonInstaller)
     {
         _orchestrator = orchestrator;
         _settingsService = settingsService;
         _auditLog = auditLog;
         _logger = logger;
         _uninstallCleanup = uninstallCleanup;
+        _ribbonInstaller = ribbonInstaller;
 
         LoadSettings();
 
         NavigateCommand = new RelayCommand(p => ActiveSection = p?.ToString() ?? "Home");
         RefreshCommand = new AsyncRelayCommand(RefreshAsync);
         TestRevitCommand = new AsyncRelayCommand(TestRevitAsync);
+        InstallAvToolsRibbonCommand = new AsyncRelayCommand(InstallAvToolsRibbonAsync);
         ConnectProviderCommand = new AsyncRelayCommand(p => ConnectProviderAsync(p));
         DisconnectProviderCommand = new AsyncRelayCommand(p => DisconnectProviderAsync(p));
         RepairProviderCommand = new AsyncRelayCommand(p => RepairProviderAsync(p));
@@ -108,6 +113,12 @@ public sealed class MainViewModel : ObservableObject
         set => SetProperty(ref _pyRevitStateSummary, value);
     }
 
+    public string AvToolsRibbonSummary
+    {
+        get => _avToolsRibbonSummary;
+        set => SetProperty(ref _avToolsRibbonSummary, value);
+    }
+
     public string ConnectionHealthSummary
     {
         get => _connectionHealthSummary;
@@ -165,6 +176,7 @@ public sealed class MainViewModel : ObservableObject
     public RelayCommand NavigateCommand { get; }
     public AsyncRelayCommand RefreshCommand { get; }
     public AsyncRelayCommand TestRevitCommand { get; }
+    public AsyncRelayCommand InstallAvToolsRibbonCommand { get; }
     public AsyncRelayCommand ConnectProviderCommand { get; }
     public AsyncRelayCommand DisconnectProviderCommand { get; }
     public AsyncRelayCommand RepairProviderCommand { get; }
@@ -184,6 +196,8 @@ public sealed class MainViewModel : ObservableObject
         try
         {
             var (discovery, sessions, diagnostics) = await _orchestrator.RefreshAllAsync();
+            var ribbonStatus = _ribbonInstaller.InspectRibbon();
+            AvToolsRibbonSummary = ribbonStatus.Summary;
 
             Providers.Clear();
             foreach (var p in discovery.Providers)
@@ -248,6 +262,24 @@ public sealed class MainViewModel : ObservableObject
                 ActiveDocumentSummary = res.ActiveDocumentTitle;
             }
 
+            RefreshAuditEntries();
+        }
+        finally
+        {
+            IsBusy = false;
+        }
+    }
+
+    private async Task InstallAvToolsRibbonAsync()
+    {
+        IsBusy = true;
+        StatusBanner = "Installing AV Orch onto shared AV Tools Revit ribbon...";
+        try
+        {
+            var settings = _settingsService.Load();
+            var res = await _ribbonInstaller.InstallOrUpdateRibbonAsync(settings.CustomPyRevitPath);
+            StatusBanner = res.Message;
+            AvToolsRibbonSummary = _ribbonInstaller.InspectRibbon().Summary;
             RefreshAuditEntries();
         }
         finally

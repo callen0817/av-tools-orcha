@@ -38,8 +38,8 @@ public sealed class DiagnosticsService : IDiagnosticsService
                 DiagnosticCategory.Prerequisite,
                 DiagnosticSeverity.Error,
                 "Autodesk Revit Not Detected",
-                "No supported Autodesk Revit (2021-2027) installation was found on this machine.",
-                "Install a supported Autodesk Revit version before connecting AI providers.",
+                "No supported Autodesk Revit (2023 or newer) installation was found on this machine.",
+                "Install Autodesk Revit 2023 or newer before connecting AI providers.",
                 CanAutoRepair: false));
         }
         else if (discovery.RevitInstallations.All(r => !r.IsSupported))
@@ -49,8 +49,8 @@ public sealed class DiagnosticsService : IDiagnosticsService
                 DiagnosticCategory.VersionCompatibility,
                 DiagnosticSeverity.Error,
                 "Unsupported Revit Version",
-                "Installed Revit versions are outside the pyRevit 7.x supported range (2021-2027).",
-                "Upgrade to Autodesk Revit 2022 or newer.",
+                "Installed Revit versions are older than the AV Orch minimum supported version (Autodesk Revit 2023).",
+                "Upgrade to Autodesk Revit 2023 or newer.",
                 CanAutoRepair: false));
         }
 

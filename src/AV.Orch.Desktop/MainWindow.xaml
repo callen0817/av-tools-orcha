@@ -196,6 +196,14 @@
 
                         <Border Style="{StaticResource CardStyle}">
                             <StackPanel>
+                                <TextBlock Text="Shared AV Tools Revit Ribbon (Revit 2023+)" Style="{StaticResource SectionTitleStyle}"/>
+                                <TextBlock Text="{Binding AvToolsRibbonSummary}" Style="{StaticResource BodyTextStyle}" Margin="0,0,0,12"/>
+                                <Button Content="Install / Update AV Orch on AV Tools Ribbon" Style="{StaticResource SecondaryButtonStyle}" HorizontalAlignment="Left" Command="{Binding InstallAvToolsRibbonCommand}"/>
+                            </StackPanel>
+                        </Border>
+
+                        <Border Style="{StaticResource CardStyle}">
+                            <StackPanel>
                                 <TextBlock Text="Installed Revit Versions" Style="{StaticResource SectionTitleStyle}"/>
                                 <ItemsControl ItemsSource="{Binding RevitInstallations}">
                                     <ItemsControl.ItemTemplate>

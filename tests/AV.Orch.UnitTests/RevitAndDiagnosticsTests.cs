@@ -15,20 +15,24 @@ namespace AV.Orch.UnitTests;
 public sealed class RevitAndDiagnosticsTests
 {
     [Fact]
-    public async Task RevitDiscovery_DetectsSupportedAndUnsupportedVersions()
+    public async Task RevitDiscovery_SupportsRevit2023ForwardOnly()
     {
         var fs = new InMemoryFileSystem();
         var env = new FakeEnvironmentProvider { ProgramFilesDirectory = "/ProgramFiles" };
 
+        fs.WriteAllText("/ProgramFiles/Autodesk/Revit 2022/Revit.exe", "bin");
+        fs.WriteAllText("/ProgramFiles/Autodesk/Revit 2023/Revit.exe", "bin");
         fs.WriteAllText("/ProgramFiles/Autodesk/Revit 2025/Revit.exe", "bin");
-        fs.WriteAllText("/ProgramFiles/Autodesk/Revit 2020/Revit.exe", "bin");
+        fs.WriteAllText("/ProgramFiles/Autodesk/Revit 2028/Revit.exe", "bin");
 
         var discovery = new RevitDiscoveryService(fs, env);
         var installs = await discovery.DiscoverInstallationsAsync();
 
-        Assert.Equal(2, installs.Count);
+        Assert.Equal(4, installs.Count);
+        Assert.False(installs.First(r => r.Year == 2022).IsSupported);
+        Assert.True(installs.First(r => r.Year == 2023).IsSupported);
         Assert.True(installs.First(r => r.Year == 2025).IsSupported);
-        Assert.False(installs.First(r => r.Year == 2020).IsSupported);
+        Assert.True(installs.First(r => r.Year == 2028).IsSupported);
     }
 
     [Fact]

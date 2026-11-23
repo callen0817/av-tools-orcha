@@ -48,6 +48,7 @@ public interface IFileSystem
     void CopyFile(string sourcePath, string destinationPath, bool overwrite = true);
     void DeleteFile(string path);
     void CreateDirectory(string path);
+    void DeleteDirectory(string path, bool recursive = false);
     IEnumerable<string> EnumerateFiles(string directory, string searchPattern = "*");
     IEnumerable<string> EnumerateDirectories(string directory);
     DateTimeOffset GetLastWriteTimeUtc(string path);

@@ -40,7 +40,14 @@
       <RegistryValue Root="HKCU" Key="Software\Artificial Vision\AV Orch" Name="Installed" Type="integer" Value="1" KeyPath="yes" />
     </Component>
 
-    <!-- Optional clean uninstall action: removes ONLY AV Orch-owned MCP registrations -->
+    <!-- Install AV Orch into the shared AV Tools Revit ribbon by default (preserves NX Xplode & other AV Tools) -->
+    <CustomAction Id="InstallAvToolsRibbon"
+                  Directory="INSTALLFOLDER"
+                  ExeCommand="&quot;[INSTALLFOLDER]AVOrch.exe&quot; --install-ribbon"
+                  Execute="immediate"
+                  Return="ignore" />
+
+    <!-- Optional clean uninstall action: removes ONLY AV Orch-owned MCP registrations and AV Orch ribbon button -->
     <CustomAction Id="CleanupAvOrchMcpRegistrations"
                   Directory="INSTALLFOLDER"
                   ExeCommand="&quot;[INSTALLFOLDER]AVOrch.exe&quot; --uninstall-cleanup"
@@ -48,6 +55,9 @@
                   Return="ignore" />
 
     <InstallExecuteSequence>
+      <Custom Action="InstallAvToolsRibbon"
+              After="InstallFinalize"
+              Condition="NOT REMOVE" />
       <Custom Action="CleanupAvOrchMcpRegistrations"
               Before="RemoveFiles"
               Condition="REMOVE=&quot;ALL&quot; AND NOT UPGRADINGPRODUCTCODE AND AV_ORCH_CLEAN_MCP_ON_UNINSTALL=&quot;1&quot;" />

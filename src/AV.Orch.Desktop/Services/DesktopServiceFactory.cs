@@ -13,6 +13,7 @@ namespace AV.Orch.Desktop.Services;
 public sealed record DesktopComposition(
     MainViewModel MainViewModel,
     UninstallCleanupService UninstallCleanupService,
+    AvToolsRibbonInstaller RibbonInstaller,
     ISettingsService SettingsService,
     IAppLogger Logger);
 
@@ -51,8 +52,9 @@ public static class DesktopServiceFactory
             logger,
             adapters);
 
-        var uninstallCleanup = new UninstallCleanupService(adapters, auditLog, logger);
-        var vm = new MainViewModel(orchestrator, settingsService, auditLog, logger, uninstallCleanup);
-        return new DesktopComposition(vm, uninstallCleanup, settingsService, logger);
+        var ribbonInstaller = new AvToolsRibbonInstaller(fileSystem, environment, processRunner, logger, auditLog);
+        var uninstallCleanup = new UninstallCleanupService(adapters, auditLog, logger, ribbonInstaller);
+        var vm = new MainViewModel(orchestrator, settingsService, auditLog, logger, uninstallCleanup, ribbonInstaller);
+        return new DesktopComposition(vm, uninstallCleanup, ribbonInstaller, settingsService, logger);
     }
 }

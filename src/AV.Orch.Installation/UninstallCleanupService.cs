@@ -14,20 +14,24 @@ public sealed class UninstallCleanupService
     private readonly IReadOnlyList<IAiProviderAdapter> _adapters;
     private readonly IAuditLogService _auditLog;
     private readonly IAppLogger _logger;
+    private readonly AvToolsRibbonInstaller? _ribbonInstaller;
 
     public UninstallCleanupService(
         IEnumerable<IAiProviderAdapter> adapters,
         IAuditLogService auditLog,
-        IAppLogger logger)
+        IAppLogger logger,
+        AvToolsRibbonInstaller? ribbonInstaller = null)
     {
         _adapters = adapters.ToList();
         _auditLog = auditLog;
         _logger = logger;
+        _ribbonInstaller = ribbonInstaller;
     }
 
     /// <summary>
-    /// Removes ONLY AV Orch-owned MCP registrations across providers.
-    /// Never uninstalls Revit, pyRevit, Codex, Gemini, Claude, user auth, or customer models.
+    /// Removes ONLY AV Orch-owned MCP registrations across providers and ONLY the AV Orch button
+    /// from the shared AV Tools Revit ribbon.
+    /// Never uninstalls Revit, pyRevit, NX Xplode / other AV Tools, Codex, Gemini, Claude, user auth, or customer models.
     /// </summary>
     public async Task<UninstallCleanupResult> RemoveAllAvOrchRegistrationsAsync(CancellationToken cancellationToken = default)
     {
@@ -61,6 +65,15 @@ public sealed class UninstallCleanupService
                 errors.Add($"{adapter.DisplayName}: {res.Message}");
                 _logger.Error("UninstallCleanup", $"Failed to clean {adapter.DisplayName}: {res.Message}");
                 _auditLog.Record("UninstallCleanup", "Uninstaller", adapter.DisplayName, false, res.Message);
+            }
+        }
+
+        if (_ribbonInstaller is not null)
+        {
+            var ribbonRes = await _ribbonInstaller.RemoveAvOrchFromRibbonAsync(cancellationToken).ConfigureAwait(false);
+            if (!ribbonRes.Succeeded)
+            {
+                errors.Add($"AV Tools Ribbon: {ribbonRes.Message}");
             }
         }
 

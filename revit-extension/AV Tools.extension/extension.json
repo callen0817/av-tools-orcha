@@ -1,0 +1,7 @@
+{
+  "type": "extension",
+  "name": "AV Tools",
+  "description": "Artificial Vision Revit Tools Suite (NX Xplode, AV Orch, and future AV Tools)",
+  "author": "Artificial Vision, Inc.",
+  "version": "1.0.0"
+}

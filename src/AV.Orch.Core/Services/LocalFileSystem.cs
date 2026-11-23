@@ -44,6 +44,14 @@ public sealed class LocalFileSystem : IFileSystem
 
     public void CreateDirectory(string path) => Directory.CreateDirectory(path);
 
+    public void DeleteDirectory(string path, bool recursive = false)
+    {
+        if (Directory.Exists(path))
+        {
+            Directory.Delete(path, recursive);
+        }
+    }
+
     public IEnumerable<string> EnumerateFiles(string directory, string searchPattern = "*") =>
         Directory.Exists(directory) ? Directory.EnumerateFiles(directory, searchPattern) : Array.Empty<string>();
 
