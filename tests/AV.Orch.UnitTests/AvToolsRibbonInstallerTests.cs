@@ -93,4 +93,38 @@ public sealed class AvToolsRibbonInstallerTests
         Assert.True(fs.FileExists(nxScript));
         Assert.Equal(nxExtJsonContent, fs.ReadAllText(existingExtJson));
     }
+
+    [Fact]
+    public void NativeDockablePaneAddins_RegistersNet48For2023And2024_AndNet8For2025Forward_AndPreservesNxXplodeAddin()
+    {
+        var fs = new InMemoryFileSystem();
+        var env = new FakeEnvironmentProvider();
+        var proc = new FakeProcessRunner();
+        var redactor = new SecretRedactor();
+        var installer = new AvToolsRibbonInstaller(fs, env, proc, new StructuredAppLogger(fs, env, redactor), new AuditLogService(fs, env, redactor));
+
+        // Seed installed AVTools_OrchDock.dll binaries
+        var installRoot = Path.Combine(env.LocalAppDataDirectory, "Artificial Vision", "AV Orch");
+        fs.WriteAllText(Path.Combine(installRoot, "addin", "net48", "AVTools_OrchDock.dll"), "net48");
+        fs.WriteAllText(Path.Combine(installRoot, "addin", "net8.0-windows", "AVTools_OrchDock.dll"), "net8");
+
+        // Seed Revit Addins folders (2022 should be ignored; 2023, 2025, 2026 should be registered)
+        var addinsRoot = Path.Combine(env.RoamingAppDataDirectory, "Autodesk", "Revit", "Addins");
+        fs.CreateDirectory(Path.Combine(addinsRoot, "2022"));
+        fs.CreateDirectory(Path.Combine(addinsRoot, "2023"));
+        fs.CreateDirectory(Path.Combine(addinsRoot, "2025"));
+        fs.WriteAllText(Path.Combine(addinsRoot, "2025", "AVTools.addin"), "<NX-Xplode/>");
+
+        var count = installer.RegisterNativeDockablePaneAddins();
+        Assert.Equal(2, count);
+        Assert.False(fs.FileExists(Path.Combine(addinsRoot, "2022", "AVTools_OrchDock.addin")));
+        Assert.Contains("net48", fs.ReadAllText(Path.Combine(addinsRoot, "2023", "AVTools_OrchDock.addin")));
+        Assert.Contains("net8.0-windows", fs.ReadAllText(Path.Combine(addinsRoot, "2025", "AVTools_OrchDock.addin")));
+
+        // Removal cleans AVTools_OrchDock.addin while preserving NX Xplode's AVTools.addin
+        installer.RemoveNativeDockablePaneAddins();
+        Assert.False(fs.FileExists(Path.Combine(addinsRoot, "2023", "AVTools_OrchDock.addin")));
+        Assert.False(fs.FileExists(Path.Combine(addinsRoot, "2025", "AVTools_OrchDock.addin")));
+        Assert.True(fs.FileExists(Path.Combine(addinsRoot, "2025", "AVTools.addin")));
+    }
 }

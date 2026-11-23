@@ -54,7 +54,8 @@ public static class DesktopServiceFactory
 
         var ribbonInstaller = new AvToolsRibbonInstaller(fileSystem, environment, processRunner, logger, auditLog);
         var uninstallCleanup = new UninstallCleanupService(adapters, auditLog, logger, ribbonInstaller);
-        var vm = new MainViewModel(orchestrator, settingsService, auditLog, logger, uninstallCleanup, ribbonInstaller);
+        var installWorkflow = new DependencyInstallWorkflow(processRunner, auditLog);
+        var vm = new MainViewModel(orchestrator, settingsService, auditLog, logger, uninstallCleanup, ribbonInstaller, installWorkflow);
         return new DesktopComposition(vm, uninstallCleanup, ribbonInstaller, settingsService, logger);
     }
 }

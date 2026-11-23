@@ -209,9 +209,12 @@ if __name__ == "__main__":
                     cancellationToken: cancellationToken).ConfigureAwait(false);
             }
 
+            // Also register native Revit 2023+ Dockable Chat Pane add-in manifests (AVTools_OrchDock.addin)
+            RegisterNativeDockablePaneAddins();
+
             var message = preExistingRibbon
-                ? "Added AV Orch to the existing shared 'AV Tools' Revit ribbon (all existing AV Tools preserved)."
-                : "Created the 'AV Tools' Revit ribbon and added the AV Orch tool.";
+                ? "Added AV Orch (ribbon + embedded Revit chat pane) to the existing shared 'AV Tools' Revit ribbon (all existing AV Tools preserved)."
+                : "Created the 'AV Tools' Revit ribbon and added the AV Orch tool + embedded Revit chat pane.";
 
             _logger.Info("AvToolsRibbon", message);
             _auditLog.Record("InstallAvToolsRibbon", "System", ButtonDirectory, true, message);
@@ -229,6 +232,8 @@ if __name__ == "__main__":
     {
         try
         {
+            RemoveNativeDockablePaneAddins();
+
             if (!_fileSystem.DirectoryExists(ButtonDirectory))
             {
                 return Task.FromResult(OperationResult.Ok("AV Orch button was not present on the AV Tools ribbon."));
@@ -277,6 +282,72 @@ if __name__ == "__main__":
         {
             _logger.Error("AvToolsRibbon", "Failed to remove AV Orch from AV Tools ribbon", ex);
             return Task.FromResult(OperationResult.Fail($"Failed to remove AV Orch ribbon button: {ex.Message}", "RIBBON_REMOVE_FAILED"));
+        }
+    }
+
+    public int RegisterNativeDockablePaneAddins()
+    {
+        var installRoot = Path.Combine(_environment.LocalAppDataDirectory, "Artificial Vision", "AV Orch");
+        var net48Dll = Path.Combine(installRoot, "addin", "net48", "AVTools_OrchDock.dll");
+        var net8Dll = Path.Combine(installRoot, "addin", "net8.0-windows", "AVTools_OrchDock.dll");
+        var addinsRoot = Path.Combine(_environment.RoamingAppDataDirectory, "Autodesk", "Revit", "Addins");
+
+        if (!_fileSystem.DirectoryExists(addinsRoot))
+        {
+            return 0;
+        }
+
+        var registeredCount = 0;
+        foreach (var yearDir in _fileSystem.EnumerateDirectories(addinsRoot))
+        {
+            var folderName = Path.GetFileName(yearDir);
+            if (!int.TryParse(folderName, out var year) || year < 2023)
+            {
+                continue;
+            }
+
+            var dllPath = year <= 2024 ? net48Dll : net8Dll;
+            if (!_fileSystem.FileExists(dllPath))
+            {
+                continue;
+            }
+
+            var manifestPath = Path.Combine(yearDir, "AVTools_OrchDock.addin");
+            var manifestXml = $"""
+<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<RevitAddIns>
+  <AddIn Type="Application">
+    <Name>AV Tools - AV Orch Chat</Name>
+    <Assembly>{dllPath}</Assembly>
+    <AddInId>D8A4B3C1-7F2E-4A91-9C62-11E5F8A24B09</AddInId>
+    <FullClassName>AV.Orch.RevitAddin.App</FullClassName>
+    <VendorId>AVTL</VendorId>
+    <VendorDescription>Artificial Vision, Inc. - AV Tools</VendorDescription>
+  </AddIn>
+</RevitAddIns>
+""";
+            _fileSystem.WriteAllText(manifestPath, manifestXml + Environment.NewLine);
+            registeredCount++;
+        }
+
+        return registeredCount;
+    }
+
+    public void RemoveNativeDockablePaneAddins()
+    {
+        var addinsRoot = Path.Combine(_environment.RoamingAppDataDirectory, "Autodesk", "Revit", "Addins");
+        if (!_fileSystem.DirectoryExists(addinsRoot))
+        {
+            return;
+        }
+
+        foreach (var yearDir in _fileSystem.EnumerateDirectories(addinsRoot))
+        {
+            var manifestPath = Path.Combine(yearDir, "AVTools_OrchDock.addin");
+            if (_fileSystem.FileExists(manifestPath))
+            {
+                _fileSystem.DeleteFile(manifestPath);
+            }
         }
     }
 }

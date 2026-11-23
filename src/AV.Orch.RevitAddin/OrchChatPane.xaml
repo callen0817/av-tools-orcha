@@ -1,0 +1,103 @@
+<Page x:Class="AV.Orch.RevitAddin.OrchChatPane"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      Title="AV Orch — AI Chat"
+      Background="#FFFFFF"
+      Foreground="#111111"
+      FontFamily="Segoe UI">
+
+    <Grid Margin="10">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <!-- Header -->
+        <DockPanel Grid.Row="0" Margin="0,0,0,8">
+            <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                <Border Width="22" Height="22" CornerRadius="4" Background="#A68224" Margin="0,0,8,0">
+                    <TextBlock Text="AV" Foreground="#FFFFFF" FontWeight="Bold" FontSize="10" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                </Border>
+                <TextBlock Text="AV Orch Chat" FontSize="15" FontWeight="SemiBold" VerticalAlignment="Center"/>
+            </StackPanel>
+            <Button x:Name="BtnOpenSettings" Content="Settings" HorizontalAlignment="Right" Padding="8,3"
+                    Background="Transparent" BorderBrush="#D8D5CD" BorderThickness="1" Click="OnOpenSettingsClick"/>
+        </DockPanel>
+
+        <!-- Provider Selector & Quick Actions -->
+        <Border Grid.Row="1" Background="#F7F7F5" BorderBrush="#E2E0DA" BorderThickness="1" CornerRadius="5" Padding="8" Margin="0,0,0,8">
+            <StackPanel>
+                <DockPanel Margin="0,0,0,6">
+                    <TextBlock Text="Provider:" VerticalAlignment="Center" FontWeight="SemiBold" Margin="0,0,8,0"/>
+                    <ComboBox x:Name="ProviderCombo" SelectedIndex="0" SelectionChanged="OnProviderChanged">
+                        <ComboBoxItem Content="Anthropic Claude Code" Tag="claude"/>
+                        <ComboBoxItem Content="OpenAI Codex CLI" Tag="codex"/>
+                        <ComboBoxItem Content="Google Gemini CLI" Tag="gemini"/>
+                    </ComboBox>
+                </DockPanel>
+                <TextBlock x:Name="ProviderStatusText" Text="Checking CLI status..." FontSize="11.5" Foreground="#555555" TextWrapping="Wrap" Margin="0,0,0,6"/>
+                <WrapPanel>
+                    <Button x:Name="BtnInstallCli" Content="Install Latest CLI" Padding="8,4" Margin="0,0,6,4"
+                            Background="#111111" Foreground="#FFFFFF" BorderThickness="0" Click="OnInstallCliClick"/>
+                    <Button x:Name="BtnSignIn" Content="Sign In" Padding="8,4" Margin="0,0,6,4"
+                            Background="#FFFFFF" BorderBrush="#D8D5CD" BorderThickness="1" Click="OnSignInClick"/>
+                    <Button x:Name="BtnConnectMcp" Content="Connect MCP" Padding="8,4" Margin="0,0,6,4"
+                            Background="#FFFFFF" BorderBrush="#D8D5CD" BorderThickness="1" Click="OnConnectMcpClick"/>
+                    <Button x:Name="BtnRefresh" Content="Refresh" Padding="8,4" Margin="0,0,0,4"
+                            Background="#FFFFFF" BorderBrush="#D8D5CD" BorderThickness="1" Click="OnRefreshClick"/>
+                </WrapPanel>
+            </StackPanel>
+        </Border>
+
+        <!-- Trust Notice -->
+        <Border Grid.Row="2" Background="#F5EFE0" BorderBrush="#E5D7B0" BorderThickness="1" CornerRadius="4" Padding="7,5" Margin="0,0,0,8">
+            <TextBlock Text="Uses your own AI account via local pyRevit MCP. Model edits always require Keep/Discard approval in Revit."
+                       FontSize="11" Foreground="#4A3B12" TextWrapping="Wrap"/>
+        </Border>
+
+        <!-- Chat Transcript -->
+        <Border Grid.Row="3" BorderBrush="#E2E0DA" BorderThickness="1" CornerRadius="5" Background="#FAFAFA" Margin="0,0,0,8">
+            <ScrollViewer x:Name="ChatScroll" VerticalScrollBarVisibility="Auto" Padding="8">
+                <TextBox x:Name="ChatTranscript"
+                         IsReadOnly="True"
+                         BorderThickness="0"
+                         Background="Transparent"
+                         TextWrapping="Wrap"
+                         FontSize="12.5"
+                         VerticalScrollBarVisibility="Auto"
+                         Text="AV Orch Ready. Ask about your active Revit model below (for example: &quot;How many doors on Level 1 have no Mark?&quot;)."/>
+            </ScrollViewer>
+        </Border>
+
+        <!-- Prompt Composer -->
+        <Grid Grid.Row="4">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+            <TextBox x:Name="PromptInput"
+                     Grid.Row="0"
+                     MinHeight="56"
+                     MaxHeight="120"
+                     AcceptsReturn="True"
+                     TextWrapping="Wrap"
+                     VerticalScrollBarVisibility="Auto"
+                     Padding="6"
+                     BorderBrush="#CFCBC2"
+                     PreviewKeyDown="OnPromptKeyDown"/>
+            <DockPanel Grid.Row="1" Margin="0,6,0,0">
+                <StackPanel Orientation="Horizontal" DockPanel.Dock="Left">
+                    <Button x:Name="BtnNewChat" Content="New Chat" Padding="8,4" Margin="0,0,6,0"
+                            Background="#FFFFFF" BorderBrush="#D8D5CD" BorderThickness="1" Click="OnNewChatClick"/>
+                    <Button x:Name="BtnCancel" Content="Cancel" Padding="8,4" IsEnabled="False"
+                            Background="#FFFFFF" BorderBrush="#D8D5CD" BorderThickness="1" Click="OnCancelClick"/>
+                </StackPanel>
+                <Button x:Name="BtnSend" Content="Send" HorizontalAlignment="Right" Padding="16,5"
+                        Background="#111111" Foreground="#FFFFFF" FontWeight="SemiBold" BorderThickness="0" Click="OnSendClick"/>
+            </DockPanel>
+        </Grid>
+    </Grid>
+</Page>

@@ -151,6 +151,9 @@
                                             <TextBlock Text="{Binding Authentication.Message}" Style="{StaticResource BodyTextStyle}" Margin="0,0,0,4"/>
                                             <TextBlock Text="{Binding Registration.Message}" Style="{StaticResource BodyTextStyle}" Margin="0,0,0,12"/>
                                             <WrapPanel>
+                                                <Button Content="Install Latest CLI" Style="{StaticResource SecondaryButtonStyle}" Margin="0,0,8,0"
+                                                        Command="{Binding DataContext.InstallProviderCliCommand, RelativeSource={RelativeSource AncestorType=Window}}"
+                                                        CommandParameter="{Binding Provider}"/>
                                                 <Button Content="Sign In" Style="{StaticResource SecondaryButtonStyle}" Margin="0,0,8,0"
                                                         Command="{Binding DataContext.SignInProviderCommand, RelativeSource={RelativeSource AncestorType=Window}}"
                                                         CommandParameter="{Binding Provider}"/>

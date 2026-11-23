@@ -45,6 +45,19 @@ Invoke-CheckedDotNet @(
     "--nologo"
 )
 
+Write-Host "[2b/5] Building native Revit 2023+ Dockable Chat Pane (net48 + net8.0-windows)..."
+Invoke-CheckedDotNet @(
+    "build",
+    (Join-Path $RepoRoot "src\AV.Orch.RevitAddin\AV.Orch.RevitAddin.csproj"),
+    "-c", $Configuration,
+    "--nologo"
+)
+$AddinNet48Out = Join-Path $PublishDir "addin\net48"
+$AddinNet8Out = Join-Path $PublishDir "addin\net8.0-windows"
+New-Item -ItemType Directory -Force -Path $AddinNet48Out, $AddinNet8Out | Out-Null
+Copy-Item (Join-Path $RepoRoot "src\AV.Orch.RevitAddin\bin\$Configuration\net48\AVTools_OrchDock.dll") -Destination $AddinNet48Out -Force
+Copy-Item (Join-Path $RepoRoot "src\AV.Orch.RevitAddin\bin\$Configuration\net8.0-windows\AVTools_OrchDock.dll") -Destination $AddinNet8Out -Force
+
 $ZipPath = Join-Path $ReleaseDir "AVOrch-1.0.0-$Runtime-unsigned.zip"
 if (Test-Path $ZipPath) { Remove-Item $ZipPath -Force }
 Compress-Archive -Path "$PublishDir\*" -DestinationPath $ZipPath

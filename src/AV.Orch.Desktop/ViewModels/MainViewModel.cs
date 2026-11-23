@@ -15,6 +15,7 @@ public sealed class MainViewModel : ObservableObject
     private readonly IAppLogger _logger;
     private readonly UninstallCleanupService _uninstallCleanup;
     private readonly AvToolsRibbonInstaller _ribbonInstaller;
+    private readonly DependencyInstallWorkflow _installWorkflow;
 
     private string _activeSection = "Home";
     private bool _isBusy;
@@ -37,7 +38,8 @@ public sealed class MainViewModel : ObservableObject
         IAuditLogService auditLog,
         IAppLogger logger,
         UninstallCleanupService uninstallCleanup,
-        AvToolsRibbonInstaller ribbonInstaller)
+        AvToolsRibbonInstaller ribbonInstaller,
+        DependencyInstallWorkflow installWorkflow)
     {
         _orchestrator = orchestrator;
         _settingsService = settingsService;
@@ -45,6 +47,7 @@ public sealed class MainViewModel : ObservableObject
         _logger = logger;
         _uninstallCleanup = uninstallCleanup;
         _ribbonInstaller = ribbonInstaller;
+        _installWorkflow = installWorkflow;
 
         LoadSettings();
 
@@ -52,6 +55,7 @@ public sealed class MainViewModel : ObservableObject
         RefreshCommand = new AsyncRelayCommand(RefreshAsync);
         TestRevitCommand = new AsyncRelayCommand(TestRevitAsync);
         InstallAvToolsRibbonCommand = new AsyncRelayCommand(InstallAvToolsRibbonAsync);
+        InstallProviderCliCommand = new AsyncRelayCommand(p => InstallProviderCliAsync(p));
         ConnectProviderCommand = new AsyncRelayCommand(p => ConnectProviderAsync(p));
         DisconnectProviderCommand = new AsyncRelayCommand(p => DisconnectProviderAsync(p));
         RepairProviderCommand = new AsyncRelayCommand(p => RepairProviderAsync(p));
@@ -177,6 +181,7 @@ public sealed class MainViewModel : ObservableObject
     public AsyncRelayCommand RefreshCommand { get; }
     public AsyncRelayCommand TestRevitCommand { get; }
     public AsyncRelayCommand InstallAvToolsRibbonCommand { get; }
+    public AsyncRelayCommand InstallProviderCliCommand { get; }
     public AsyncRelayCommand ConnectProviderCommand { get; }
     public AsyncRelayCommand DisconnectProviderCommand { get; }
     public AsyncRelayCommand RepairProviderCommand { get; }
@@ -281,6 +286,66 @@ public sealed class MainViewModel : ObservableObject
             StatusBanner = res.Message;
             AvToolsRibbonSummary = _ribbonInstaller.InspectRibbon().Summary;
             RefreshAuditEntries();
+        }
+        finally
+        {
+            IsBusy = false;
+        }
+    }
+
+    private async Task InstallProviderCliAsync(object? parameter)
+    {
+        if (parameter is not ProviderId providerId)
+        {
+            return;
+        }
+
+        var descriptorId = providerId switch
+        {
+            ProviderId.Codex => "codex",
+            ProviderId.Gemini => "gemini",
+            ProviderId.ClaudeCode => "claude",
+            _ => string.Empty
+        };
+
+        var descriptor = DependencyInstallWorkflow.GetOfficialDescriptors()
+            .FirstOrDefault(d => string.Equals(d.Id, descriptorId, StringComparison.OrdinalIgnoreCase));
+        if (descriptor is null)
+        {
+            return;
+        }
+
+        var confirm = MessageBox.Show(
+            $"Install latest {descriptor.DisplayName}?\n\n" +
+            $"Official Source: {descriptor.OfficialSourceUrl}\n" +
+            $"Package: {descriptor.NpmPackageName ?? "Official Installer"}\n" +
+            $"Permissions: {descriptor.RequiredPermissions}\n\n" +
+            "Click Yes to install via npm (or open the official download page if npm is not installed).",
+            $"Install {descriptor.DisplayName}",
+            MessageBoxButton.YesNo,
+            MessageBoxImage.Question);
+
+        if (confirm != MessageBoxResult.Yes)
+        {
+            return;
+        }
+
+        IsBusy = true;
+        StatusBanner = $"Installing latest {descriptor.DisplayName}...";
+        try
+        {
+            var res = await _installWorkflow.InstallNpmCliWithApprovalAsync(descriptor, userApproved: true);
+            if (!res.Succeeded && string.Equals(res.ErrorCode, "NPM_NOT_FOUND", StringComparison.Ordinal))
+            {
+                await _installWorkflow.LaunchOfficialDownloadPageAsync(descriptor, userApproved: true);
+                StatusBanner = $"npm not found — opened official install page for {descriptor.DisplayName}.";
+            }
+            else
+            {
+                StatusBanner = res.Message;
+            }
+
+            await RefreshAsync();
         }
         finally
         {

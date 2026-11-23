@@ -13,7 +13,12 @@
 
     <StandardDirectory Id="LocalAppDataFolder">
       <Directory Id="CompanyFolder" Name="Artificial Vision">
-        <Directory Id="INSTALLFOLDER" Name="AV Orch" />
+        <Directory Id="INSTALLFOLDER" Name="AV Orch">
+          <Directory Id="AddinFolder" Name="addin">
+            <Directory Id="AddinNet48Folder" Name="net48" />
+            <Directory Id="AddinNet8Folder" Name="net8.0-windows" />
+          </Directory>
+        </Directory>
       </Directory>
     </StandardDirectory>
 
@@ -21,16 +26,31 @@
       <Directory Id="ApplicationProgramsFolder" Name="AV Orch" />
     </StandardDirectory>
 
-    <Feature Id="MainFeature" Title="AV Orch Desktop Connector" Level="1">
+    <Feature Id="MainFeature" Title="AV Orch Desktop Connector &amp; Revit Chat Pane" Level="1">
       <ComponentRef Id="AvOrchExecutable" />
+      <ComponentRef Id="RevitAddinNet48" />
+      <ComponentRef Id="RevitAddinNet8" />
       <ComponentRef Id="ApplicationShortcut" />
     </Feature>
 
     <Component Id="AvOrchExecutable" Directory="INSTALLFOLDER" Guid="9F2C6B14-8A3E-4C1B-9E71-54D02B8A6C31">
       <File Id="AvOrchExeFile" Source="$(var.PublishDir)\AVOrch.exe" />
+      <RemoveFolder Id="RemoveAddinFolder" Directory="AddinFolder" On="uninstall" />
       <RemoveFolder Id="RemoveInstallFolder" Directory="INSTALLFOLDER" On="uninstall" />
       <RemoveFolder Id="RemoveCompanyFolder" Directory="CompanyFolder" On="uninstall" />
       <RegistryValue Root="HKCU" Key="Software\Artificial Vision\AV Orch" Name="InstallPath" Type="string" Value="[INSTALLFOLDER]" KeyPath="yes" />
+    </Component>
+
+    <Component Id="RevitAddinNet48" Directory="AddinNet48Folder" Guid="A14C8D22-5B1E-47C9-8A32-6F9E10D44B11">
+      <File Id="AvOrchAddinNet48File" Source="$(var.PublishDir)\addin\net48\AVTools_OrchDock.dll" />
+      <RemoveFolder Id="RemoveAddinNet48Folder" Directory="AddinNet48Folder" On="uninstall" />
+      <RegistryValue Root="HKCU" Key="Software\Artificial Vision\AV Orch" Name="AddinNet48Installed" Type="integer" Value="1" KeyPath="yes" />
+    </Component>
+
+    <Component Id="RevitAddinNet8" Directory="AddinNet8Folder" Guid="B25D9E33-6C2F-48DA-9B43-7A0F21E55C22">
+      <File Id="AvOrchAddinNet8File" Source="$(var.PublishDir)\addin\net8.0-windows\AVTools_OrchDock.dll" />
+      <RemoveFolder Id="RemoveAddinNet8Folder" Directory="AddinNet8Folder" On="uninstall" />
+      <RegistryValue Root="HKCU" Key="Software\Artificial Vision\AV Orch" Name="AddinNet8Installed" Type="integer" Value="1" KeyPath="yes" />
     </Component>
 
     <Component Id="ApplicationShortcut" Directory="ApplicationProgramsFolder" Guid="3E9A5F12-6C4D-4A9E-B184-21F9E3C77A10">
@@ -43,14 +63,14 @@
       <RegistryValue Root="HKCU" Key="Software\Artificial Vision\AV Orch" Name="ShortcutInstalled" Type="integer" Value="1" KeyPath="yes" />
     </Component>
 
-    <!-- Install AV Orch into the shared AV Tools Revit ribbon by default (preserves NX Xplode & other AV Tools) -->
+    <!-- Install AV Orch into the shared AV Tools Revit ribbon + register Revit 2023+ Dockable Chat Pane add-in -->
     <CustomAction Id="InstallAvToolsRibbon"
                   Directory="INSTALLFOLDER"
                   ExeCommand="&quot;[INSTALLFOLDER]AVOrch.exe&quot; --install-ribbon"
                   Execute="immediate"
                   Return="ignore" />
 
-    <!-- Optional clean uninstall action: removes ONLY AV Orch-owned MCP registrations and AV Orch ribbon button -->
+    <!-- Optional clean uninstall action: removes ONLY AV Orch-owned MCP registrations, ribbon button, and AVTools_OrchDock.addin -->
     <CustomAction Id="CleanupAvOrchMcpRegistrations"
                   Directory="INSTALLFOLDER"
                   ExeCommand="&quot;[INSTALLFOLDER]AVOrch.exe&quot; --uninstall-cleanup"
