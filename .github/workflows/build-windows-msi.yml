@@ -1,0 +1,46 @@
+name: Build Windows MSI (Self-Contained)
+
+on:
+  push:
+    branches: [ main ]
+    tags: [ 'v*' ]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build-windows-msi:
+    runs-on: windows-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup .NET 8 SDK
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
+
+      - name: Build, Test, and Package Self-Contained MSI
+        shell: pwsh
+        run: .\scripts\build-release.ps1
+
+      - name: Upload Windows MSI & Portable ZIP Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: AVOrch-1.0.0-win-x64
+          path: |
+            release/AVOrch-1.0.0-win-x64.msi
+            release/AVOrch-1.0.0-win-x64-unsigned.zip
+            release/SHA256SUMS.txt
+          if-no-files-found: error
+
+      - name: Publish GitHub Release on Tag
+        if: startsWith(github.ref, 'refs/tags/v')
+        uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            release/AVOrch-1.0.0-win-x64.msi
+            release/AVOrch-1.0.0-win-x64-unsigned.zip
+            release/SHA256SUMS.txt
+          generate_release_notes: true

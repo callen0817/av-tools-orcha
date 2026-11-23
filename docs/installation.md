@@ -3,7 +3,7 @@
 ## Prerequisites
 
 - **Windows 10 (1903+) or Windows 11 (x64)** — run as a **standard (non-administrator)** user.
-- **.NET 8 Desktop Runtime (x64)** (required for framework-dependent MSI/ZIP builds).
+- **No separate .NET install required** when using the self-contained `AVOrch-1.0.0-win-x64.msi` installer.
 - **Autodesk Revit 2023 or newer** (2023 forward).
 - **pyRevit 7.0+** (7.1+ recommended) installed from official releases: https://github.com/pyrevitlabs/pyRevit/releases.
 - One or more supported AI CLIs with your own account:
