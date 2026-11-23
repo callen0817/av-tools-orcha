@@ -1,0 +1,10 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <RootNamespace>AV.Orch.Security</RootNamespace>
+    <AssemblyName>AV.Orch.Security</AssemblyName>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\AV.Orch.Core\AV.Orch.Core.csproj" />
+  </ItemGroup>
+</Project>

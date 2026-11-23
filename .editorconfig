@@ -1,0 +1,14 @@
+root = true
+
+[*.cs]
+# Style suggestions that do not indicate defects in CLI orchestration code
+dotnet_diagnostic.CA1861.severity = none
+dotnet_diagnostic.CA1716.severity = none
+dotnet_diagnostic.CA1305.severity = none
+dotnet_diagnostic.CA1308.severity = none
+dotnet_diagnostic.CA1310.severity = none
+dotnet_diagnostic.CA1822.severity = none
+dotnet_diagnostic.CA2007.severity = none
+
+[tests/**/*.cs]
+dotnet_diagnostic.CA1707.severity = none

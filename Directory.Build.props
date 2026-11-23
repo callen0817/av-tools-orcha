@@ -1,0 +1,20 @@
+<Project>
+  <PropertyGroup>
+    <Version>1.0.0</Version>
+    <AssemblyVersion>1.0.0.0</AssemblyVersion>
+    <FileVersion>1.0.0.0</FileVersion>
+    <InformationalVersion>1.0.0</InformationalVersion>
+    <Product>AV Orch</Product>
+    <Company>Artificial Vision, Inc.</Company>
+    <Authors>Artificial Vision, Inc.</Authors>
+    <Copyright>Copyright (c) 2026 Artificial Vision, Inc. All rights reserved.</Copyright>
+    <Description>Universal local AI-to-Revit MCP connector for OpenAI Codex, Google Gemini CLI, and Anthropic Claude Code.</Description>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <LangVersion>12.0</LangVersion>
+    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
+    <AnalysisLevel>latest-recommended</AnalysisLevel>
+    <EnableNETAnalyzers>true</EnableNETAnalyzers>
+    <Deterministic>true</Deterministic>
+  </PropertyGroup>
+</Project>

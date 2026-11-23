@@ -1,0 +1,7 @@
+<Project Sdk="WixToolset.Sdk/5.0.2">
+  <PropertyGroup>
+    <OutputName>AVOrch-1.0.0-win-x64</OutputName>
+    <InstallerPlatform>x64</InstallerPlatform>
+    <DefineConstants>PublishDir=$(MSBuildThisFileDirectory)..\build\publish\win-x64</DefineConstants>
+  </PropertyGroup>
+</Project>

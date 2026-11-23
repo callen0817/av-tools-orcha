@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" width="128" height="128" role="img" aria-label="AV Orch Logo">
+  <rect width="128" height="128" rx="18" fill="#111111"/>
+  <rect x="6" y="6" width="116" height="116" rx="14" fill="none" stroke="#C9A441" stroke-width="3"/>
+  <path d="M28 92 L50 36 L60 36 L82 92 L71 92 L66 78 L44 78 L39 92 Z M47 69 L63 69 L55 47 Z" fill="#FFFFFF"/>
+  <path d="M74 36 L85 36 L94 74 L103 36 L112 36 L98 92 L90 92 Z" fill="#C9A441"/>
+</svg>

@@ -1,0 +1,15 @@
+PROPRIETARY SOFTWARE LICENSE
+
+Copyright (c) 2026 Artificial Vision, Inc. All rights reserved.
+
+This software ("AV Orch") and its accompanying documentation are the proprietary
+and confidential property of Artificial Vision, Inc.
+
+Unauthorized copying, redistribution, modification, or commercial use of this
+software without a valid written license agreement from Artificial Vision, Inc.
+is strictly prohibited.
+
+Third-party tools and runtimes (including Autodesk Revit, pyRevit, OpenAI Codex
+CLI, Google Gemini CLI, and Anthropic Claude Code) are NOT bundled with AV Orch
+and remain governed by their respective owners' licenses and terms of service.
+See THIRD_PARTY_LICENSES.md and NOTICE.md for details.

@@ -1,0 +1,11 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <RootNamespace>AV.Orch.Revit</RootNamespace>
+    <AssemblyName>AV.Orch.Revit</AssemblyName>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\AV.Orch.Core\AV.Orch.Core.csproj" />
+    <ProjectReference Include="..\AV.Orch.Security\AV.Orch.Security.csproj" />
+  </ItemGroup>
+</Project>

@@ -1,0 +1,56 @@
+<Wix xmlns="http://wixtoolset.org/schemas/v4/wxs">
+  <Package Name="AV Orch"
+           Manufacturer="Artificial Vision, Inc."
+           Version="1.0.0.0"
+           UpgradeCode="7B8E4C19-3A2D-4D62-9E15-88A40C29F1B4"
+           Scope="perUser"
+           InstallerVersion="500">
+
+    <MajorUpgrade DowngradeErrorMessage="A newer version of AV Orch is already installed." />
+    <MediaTemplate EmbedCab="yes" />
+
+    <Property Id="AV_ORCH_CLEAN_MCP_ON_UNINSTALL" Value="1" />
+
+    <StandardDirectory Id="LocalAppDataFolder">
+      <Directory Id="CompanyFolder" Name="Artificial Vision">
+        <Directory Id="INSTALLFOLDER" Name="AV Orch" />
+      </Directory>
+    </StandardDirectory>
+
+    <StandardDirectory Id="ProgramMenuFolder">
+      <Directory Id="ApplicationProgramsFolder" Name="AV Orch" />
+    </StandardDirectory>
+
+    <Feature Id="MainFeature" Title="AV Orch Desktop Connector" Level="1">
+      <ComponentGroupRef Id="AppFiles" />
+      <ComponentRef Id="ApplicationShortcut" />
+    </Feature>
+
+    <ComponentGroup Id="AppFiles" Directory="INSTALLFOLDER">
+      <Files Include="$(var.PublishDir)\**" />
+    </ComponentGroup>
+
+    <Component Id="ApplicationShortcut" Directory="ApplicationProgramsFolder" Guid="3E9A5F12-6C4D-4A9E-B184-21F9E3C77A10">
+      <Shortcut Id="ApplicationStartMenuShortcut"
+                Name="AV Orch"
+                Description="Artificial Vision Revit AI Connector"
+                Target="[INSTALLFOLDER]AVOrch.exe"
+                WorkingDirectory="INSTALLFOLDER" />
+      <RemoveFolder Id="CleanUpShortCut" Directory="ApplicationProgramsFolder" On="uninstall" />
+      <RegistryValue Root="HKCU" Key="Software\Artificial Vision\AV Orch" Name="Installed" Type="integer" Value="1" KeyPath="yes" />
+    </Component>
+
+    <!-- Optional clean uninstall action: removes ONLY AV Orch-owned MCP registrations -->
+    <CustomAction Id="CleanupAvOrchMcpRegistrations"
+                  Directory="INSTALLFOLDER"
+                  ExeCommand="&quot;[INSTALLFOLDER]AVOrch.exe&quot; --uninstall-cleanup"
+                  Execute="immediate"
+                  Return="ignore" />
+
+    <InstallExecuteSequence>
+      <Custom Action="CleanupAvOrchMcpRegistrations"
+              Before="RemoveFiles"
+              Condition="REMOVE=&quot;ALL&quot; AND NOT UPGRADINGPRODUCTCODE AND AV_ORCH_CLEAN_MCP_ON_UNINSTALL=&quot;1&quot;" />
+    </InstallExecuteSequence>
+  </Package>
+</Wix>

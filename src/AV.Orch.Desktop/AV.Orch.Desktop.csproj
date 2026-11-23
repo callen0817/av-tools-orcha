@@ -1,0 +1,18 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net8.0-windows</TargetFramework>
+    <UseWPF>true</UseWPF>
+    <EnableWindowsTargeting>true</EnableWindowsTargeting>
+    <RootNamespace>AV.Orch.Desktop</RootNamespace>
+    <AssemblyName>AVOrch</AssemblyName>
+    <ApplicationTitle>AV Orch</ApplicationTitle>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\AV.Orch.Core\AV.Orch.Core.csproj" />
+    <ProjectReference Include="..\AV.Orch.Security\AV.Orch.Security.csproj" />
+    <ProjectReference Include="..\AV.Orch.Revit\AV.Orch.Revit.csproj" />
+    <ProjectReference Include="..\AV.Orch.Providers\AV.Orch.Providers.csproj" />
+    <ProjectReference Include="..\AV.Orch.Installation\AV.Orch.Installation.csproj" />
+  </ItemGroup>
+</Project>
